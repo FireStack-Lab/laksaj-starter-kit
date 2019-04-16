@@ -14,7 +14,7 @@ public class PollingDeposits {
         HttpProvider provider = new HttpProvider("https://dev-api.zilliqa.com/");
         service.setHttpProvider(provider);
         service.setLastFetchedTxBlock(362614);
-        service.setInteval(1000);
+        service.setInterval(1000);
         service.setAddress("4baf5fada8e5db92c3d3242618c5b47133ae003c");
         service.poll();
     }
@@ -23,7 +23,7 @@ public class PollingDeposits {
         private String address;
         private HttpProvider httpProvider;
         private Integer lastFetchedTxBlock;
-        private long inteval;
+        private long interval;
 
 
         public String getAddress() {
@@ -55,16 +55,16 @@ public class PollingDeposits {
             while (true) {
                 task();
                 System.out.println("---------------------------------------------------------");
-                Thread.sleep(inteval);
+                Thread.sleep(interval);
             }
         }
 
-        public long getInteval() {
-            return inteval;
+        public long getInterval() {
+            return interval;
         }
 
-        public void setInteval(long inteval) {
-            this.inteval = inteval;
+        public void setInterval(long interval) {
+            this.interval = interval;
         }
 
         private void task() throws IOException {
