@@ -1,4 +1,4 @@
-package com.firestack.example;
+package com.firestack.kit;
 
 import com.firestack.laksaj.crypto.KeyTools;
 import com.firestack.laksaj.utils.ByteUtil;
