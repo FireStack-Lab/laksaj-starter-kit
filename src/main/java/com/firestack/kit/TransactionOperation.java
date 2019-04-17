@@ -4,6 +4,7 @@ import com.firestack.laksaj.account.Wallet;
 import com.firestack.laksaj.jsonrpc.HttpProvider;
 import com.firestack.laksaj.transaction.Transaction;
 import com.firestack.laksaj.transaction.TransactionFactory;
+import com.firestack.laksaj.transaction.TxStatus;
 
 import java.io.IOException;
 
@@ -39,6 +40,25 @@ public class TransactionOperation {
         System.out.println(result);
 
         // Confirm
-        transaction.confirm(result.getTranID(), 33, 1000);
+        transaction.confirm(result.getTranID(), 150, 2);
+
+        // Still wait 2 blocks
+        if (TxStatus.Rejected.equals(transaction.getStatus())) {
+            String lastBlockNumberString = transaction.getProvider().getLatestTxBlock().getResult().getHeader().getBlockNum();
+            Integer lastBlockNumber = Integer.valueOf(lastBlockNumberString);
+            Integer currentBlockNumber = lastBlockNumber;
+            while (currentBlockNumber < lastBlockNumber + 2) {
+                currentBlockNumber = Integer.valueOf(transaction.getProvider().getLatestTxBlock().getResult().getHeader().getBlockNum());
+            }
+            boolean tracked = transaction.trackTx(result.getTranID());
+            if (tracked) {
+                System.out.println("Transaction confirmed!");
+
+            } else {
+                System.out.println("Transaction rejected!");
+
+            }
+
+        }
     }
 }
