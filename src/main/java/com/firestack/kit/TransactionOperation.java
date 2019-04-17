@@ -7,8 +7,10 @@ import com.firestack.laksaj.transaction.TransactionFactory;
 import com.firestack.laksaj.transaction.TxStatus;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static com.firestack.laksaj.account.Wallet.pack;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class TransactionOperation {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -49,6 +51,7 @@ public class TransactionOperation {
             Integer currentBlockNumber = lastBlockNumber;
             while (currentBlockNumber < lastBlockNumber + 2) {
                 currentBlockNumber = Integer.valueOf(transaction.getProvider().getLatestTxBlock().getResult().getHeader().getBlockNum());
+                Thread.sleep(Duration.of(2, SECONDS).toMillis());
             }
             boolean tracked = transaction.trackTx(result.getTranID());
             if (tracked) {
