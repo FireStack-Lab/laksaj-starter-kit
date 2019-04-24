@@ -1,3 +1,4 @@
 out/
 .gradle/4.6/fileHashes/fileHashes.bin
 .gradle/4.6/fileHashes/fileHashes.lock
+.idea
