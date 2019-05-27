@@ -6,3 +6,4 @@ out/
 .gradle/4.6/taskHistory/
 .gradle/buildOutputCleanup/
 build/
+.idea
