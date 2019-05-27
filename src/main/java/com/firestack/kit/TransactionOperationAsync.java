@@ -9,6 +9,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -18,7 +19,7 @@ import static com.firestack.laksaj.account.Wallet.pack;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class TransactionOperationAsync {
-    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
+    public static void main(String[] args) throws Exception {
         Wallet wallet = new Wallet();
         wallet.setProvider(new HttpProvider("https://dev-api.zilliqa.com/"));
         String address = wallet.addByPrivateKey("e19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930");
