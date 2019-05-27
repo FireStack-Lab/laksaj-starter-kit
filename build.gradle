@@ -13,10 +13,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-<<<<<<< HEAD
     compile group: 'org.firestack', name: 'laksaj', version: '0.3.5-RELEASE'
-=======
     compile group: 'org.firestack', name: 'laksaj', version: '0.1.0-RELEASE'
     compile 'com.google.guava:guava:27.1-jre'
->>>>>>> 6dff1c59695adbe90e36642e9611c3b9c14cb876
 }

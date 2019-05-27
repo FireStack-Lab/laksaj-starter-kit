@@ -1,9 +1,4 @@
 out/
-.gradle/4.6/fileHashes/fileHashes.bin
-.gradle/4.6/fileHashes/fileHashes.lock
-.gradle/4.6/fileContent/
-.gradle/4.6/fileHashes/resourceHashesCache.bin
-.gradle/4.6/taskHistory/
-.gradle/buildOutputCleanup/
+.gradle/
 build/
 .idea
