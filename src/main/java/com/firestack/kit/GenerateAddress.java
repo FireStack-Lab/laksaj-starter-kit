@@ -15,13 +15,37 @@ public class GenerateAddress {
         int n = 0;
         while (n < 100) {
             System.out.println("--------------------------");
-            System.out.println("generate nth keypair:");
             ECKeyPair keyPair = KeyTools.generateKeyPair();
             BigInteger privateInteger = keyPair.getPrivateKey();
             BigInteger publicInteger = keyPair.getPublicKey();
-            System.out.println("private key is: " + ByteUtil.byteArrayToHexString(privateInteger.toByteArray()));
-            System.out.println("public key is: " + ByteUtil.byteArrayToHexString(publicInteger.toByteArray()));
-            System.out.println("address is: " + KeyTools.getAddressFromPublicKey(ByteUtil.byteArrayToHexString(publicInteger.toByteArray())));
+
+            if (privateInteger.toString(16).length() > 64) {
+                continue;
+            }
+
+            if (privateInteger.toString(16).length() < 64) {
+                System.out.println("need pad");
+                String newPrivate = padding(privateInteger.toString(16));
+                System.out.println("private key is: " + newPrivate);
+                System.out.println("public key is: " + KeyTools.getPublicKeyFromPrivateKey(newPrivate,true).toLowerCase());
+                System.out.println("address is: " + KeyTools.getAddressFromPrivateKey(newPrivate).toLowerCase());
+                continue;
+            }
+
+            System.out.println("private key is: " + privateInteger.toString(16));
+            System.out.println("public key is: " + KeyTools.getPublicKeyFromPrivateKey(privateInteger.toString(16),true).toLowerCase());
+            System.out.println("address is: " + KeyTools.getAddressFromPrivateKey(privateInteger.toString(16)).toLowerCase());
         }
     }
+
+    public static String padding(String privateKey) {
+        int padding = 64 - privateKey.length();
+        StringBuilder privateKeyBuilder = new StringBuilder(privateKey);
+        for (int i = 0; i < padding; i++) {
+            privateKeyBuilder.insert(0, "0");
+        }
+        return privateKeyBuilder.toString();
+    }
+
+
 }
