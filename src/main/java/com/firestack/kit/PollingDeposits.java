@@ -1,21 +1,24 @@
 package com.firestack.kit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firestack.laksaj.blockchain.TxBlock;
+import com.firestack.laksaj.exception.ZilliqaAPIException;
 import com.firestack.laksaj.jsonrpc.HttpProvider;
 import com.firestack.laksaj.jsonrpc.Rep;
 import com.firestack.laksaj.transaction.Transaction;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class PollingDeposits {
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ZilliqaAPIException {
         Service service = new Service();
-        HttpProvider provider = new HttpProvider("https://dev-api.zilliqa.com/");
+        HttpProvider provider = new HttpProvider("https://api.zilliqa.com/");
         service.setHttpProvider(provider);
-        service.setLastFetchedTxBlock(362614);
+        service.setLastFetchedTxBlock(513805);
         service.setInterval(1000);
-        service.setAddress("4baf5fada8e5db92c3d3242618c5b47133ae003c");
+        service.setAddress("b30fe431b52e3be050ee5f11d9ff80a091f8f5d9");
         service.poll();
     }
 
@@ -24,6 +27,7 @@ public class PollingDeposits {
         private HttpProvider httpProvider;
         private Integer lastFetchedTxBlock;
         private long interval;
+        private ObjectMapper mapper = new ObjectMapper();
 
 
         public String getAddress() {
@@ -51,7 +55,7 @@ public class PollingDeposits {
         }
 
 
-        public void poll() throws IOException, InterruptedException {
+        public void poll() throws IOException, InterruptedException, ZilliqaAPIException {
             while (true) {
                 task();
                 System.out.println("---------------------------------------------------------");
@@ -67,7 +71,20 @@ public class PollingDeposits {
             this.interval = interval;
         }
 
-        private void task() throws IOException {
+        public static class Msg {
+            public String _amount;
+            public String _recipient;
+            public String _tag;
+            public List<Object> params;
+        }
+
+        public static class Transition {
+            public String addr;
+            public Integer depth;
+            public Msg msg;
+        }
+
+        private void task() throws IOException, ZilliqaAPIException {
             TxBlock currentBlock = httpProvider.getLatestTxBlock().getResult();
             String currentBlockNumber = currentBlock.getHeader().getBlockNum();
             System.out.println("last fetched block number = " + lastFetchedTxBlock);
@@ -85,8 +102,24 @@ public class PollingDeposits {
                     }
                     for (String hash : list) {
                         Transaction transaction = httpProvider.getTransaction(hash).getResult();
-                        if (transaction.getToAddr().equalsIgnoreCase(this.address)) {
-                            System.out.printf("Found deposit for %s, amount = %s\n", this.address, transaction.getAmount());
+                        if (transaction.getReceipt().isSuccess()) {
+                            if (transaction.getReceipt().getTransitions() != null && transaction.getReceipt().getTransitions().size() != 0) {
+                                // indicate it is a smart contract transaction
+                                List<Object> transitions = transaction.getReceipt().getTransitions();
+                                for (Object transitionObj : transitions) {
+                                    String transitionStr = mapper.writeValueAsString(transitionObj);
+                                    Transition ts = mapper.readerFor(Transition.class).readValue(transitionStr);
+                                    if (ts.msg._recipient.equalsIgnoreCase("0x" + this.address)) {
+                                        System.out.printf("Found deposit for %s, amount = %s\n", this.address, ts.msg._amount);
+                                    }
+                                }
+                            } else {
+                                // indicate it is a payment transaction
+                                if (transaction.getToAddr().equalsIgnoreCase(this.address)) {
+                                    System.out.printf("Found deposit for %s, amount = %s\n", this.address, transaction.getAmount());
+                                }
+                            }
+
                         }
                     }
                 }

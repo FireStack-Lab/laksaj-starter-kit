@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.firestack.laksaj.blockchain.DsBlock;
 import com.firestack.laksaj.blockchain.TxBlock;
+import com.firestack.laksaj.exception.ZilliqaAPIException;
 import com.firestack.laksaj.jsonrpc.HttpProvider;
 import com.firestack.laksaj.transaction.Transaction;
 import com.firestack.laksaj.transaction.TransactionFactory;
@@ -89,7 +90,7 @@ public class TxPool {
                 if (shouldReconcile) {
                     this.reconcileTxPool();
                 }
-            } catch (IOException e) {
+            } catch (IOException | ZilliqaAPIException e) {
                 System.out.println("Failed");
             }
         }, 5, TimeUnit.SECONDS);
